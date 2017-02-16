@@ -4,6 +4,7 @@
 						// then run: make
 						// then: make install
 // from https://curl.haxx.se/libcurl/c/libcurl-tutorial.html
+//think about implementing binary search for isolating a word?
 
 
 #include "libft.h"
