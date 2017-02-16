@@ -1,17 +1,22 @@
-//dependencies
-//libcurl: install libcurl from https://curl.haxx.se/download.html
-// in untarred directory, run ./configure
-						// then run: make
-						// then: make install
-// from https://curl.haxx.se/libcurl/c/libcurl-tutorial.html
-//think about implementing binary search for isolating a word?
-
-
+/*dependencies
+  libcurl: install libcurl from https://curl.haxx.se/download.html
+   in untarred directory, run ./configure --prefix=/path/to/curl/tree
+						then run: make
+						then: make install
+  run curl-config --cflags
+  run curl-config --libs
+  compile with "gcc -o executable_name hangman.c -L ./ -l ft" plus the output
+          of the call to curl-config --cflags and curl-config --libs.
+   for example, my final command is 
+   gcc -o test -L ./ -lft -L/usr/local/lib -lcurl -lldap -lz -I/usr/local/include hangman.c
+   from https://curl.haxx.se/docs/install.html
+   programming tutorial: https://curl.haxx.se/libcurl/c/libcurl-tutorial.html
+  think about implementing binary search for isolating a word?
+*/
 #include "libft.h"
 
 #include <curl/curl.h>
 #include <stdlib.h>
-#include <string.h>
 
 struct string {
   char *data;
