@@ -27,12 +27,13 @@ struct string {
   size_t len;
 };
 
-struct game {
+typedef struct  s_game {
   char  *word;
   char  *output_string;
   char  **prev_guesses;
+  char  **words;
   int   num_incorrect;
-};
+}               t_game;
 
 void init_string(struct string *s) {
   s->len = 0;
@@ -66,19 +67,22 @@ char **ft_strsplt(char *word){
 	char **res;
 	int len = ft_strlen(word);
 
+
+
 	for (i = 0; i < len; i++) {
 		if (word[i] == '\n')
 			count++;
 	}
-	if (!(res = (char **)malloc(sizeof(char *) * count))){
+	if (!(res = (char **)malloc(sizeof(char *) * (count + 2)))){
 		return (NULL);
 	}
 	i = 0;
+  // printf("current:%p\nres:%p\n", current, res);
 	while ((current = strsep(&word, "\n"))) {
-		if (!(res[i] = (char *)malloc(sizeof(char *) * (ft_strlen(current) + 1))))
-			return NULL;
+		res[i] = ft_strnew(ft_strlen(current + 1));
+    ft_memset(res[i], 0, ft_strlen(current) + 1);
+    // printf("i:%d\nres[i]:%p\n\n", i, res[i]);
 		res[i] = current;
-    // printf("current: %s\n", res[i]);
 		i++;
 	}
 	res[i] = "\0";
@@ -95,46 +99,43 @@ int ft_array_len(char **array){
   return count;
 }
 
-void ft_output(char *output_string, int num_incorrect, char **prev_guesses) {
-  printf("%s\nGuesses Remaining: %d\nPrevious Guesses: ", output_string, num_incorrect);
-  for (int i = 0; i < ft_array_len(prev_guesses); i++){
-    printf("%s, ", prev_guesses[i]);
+void ft_output(t_game *game) {
+  printf("%s\nGuesses Remaining: %d\nPrevious Guesses: ", game->output_string, game->num_incorrect);
+  for (int i = 0; i < ft_array_len(game->prev_guesses); i++){
+    printf("%s, ", (game->prev_guesses)[i]);
   }
   printf("\n");
 }
 
-void play_game(char *word, char *output_string)
+void play_game(t_game *game)
 {
-  char **prev_guesses;
-  int num_incorrect = 0;
   bool complete = false;
   char *guess;
 
-  if (!(prev_guesses = (char **)malloc(sizeof(char) * 100)))
-    return;
-  for(int i = 0; i < 100; i++) {
-    if (!(prev_guesses[i] = (char *)malloc(sizeof(char) * 100)))
-      return;
-    prev_guesses[i] = "\0";
-  }
-  while (!complete && num_incorrect < 6){
-    ft_output(output_string, num_incorrect, prev_guesses);
+  while (!complete && game->num_incorrect < 6){
+    ft_output(game);
 
   }
 }
 
-void game_init(char **words)
+void game_init(t_game *game)
 {
-  char answer[100];
+  char *answer;
   char *word;
   char *output_string;
+  char **prev_guesses;
+
+  answer = ft_strnew(100);
+  ft_memset(answer, 0, 100);
   printf("Hello, would you like to play a game?\n");
   if (scanf("%s", answer) < 0){
     ft_puterr("error reading user input");
-    exit(-1);
+    free(answer);
+    return;
   }
   if (ft_strcmp(answer, "no") == 0){
-    exit(0);
+    free(answer);
+    return;
   }
   if (ft_strcmp(answer, "yes") == 0){
     ft_putendl("yes");
@@ -145,14 +146,27 @@ void game_init(char **words)
   srand(time(NULL));
   int r = rand() % 162412;
   printf("number: (%d)\n", r);
-  word = words[r];
-  printf("words : (%s)\n", word);
-  output_string = ft_strnew(ft_strlen(word)+1);
-  printf("len+1=(%lu)\n", (ft_strlen(word)+1));
-  for (int i = 0; i < ft_strlen(word); i++)
-    output_string[i] = '_';
-  printf("output_string: (%s)\n", output_string);
-  play_game(word, output_string);
+  game->word = game->words[r];
+  printf("words : (%s)\n", game->word);
+
+  game->output_string = ft_strnew(ft_strlen(game->word)+1);
+  ft_memset(game->output_string, '_', ft_strlen(word));
+  printf("output_string: (%s)\n", game->output_string);
+
+  if (!(game->prev_guesses = (char **)malloc(sizeof(char *) * 100)))
+    return;
+  for(int i = 0; i < 100; i++) {
+    (game->prev_guesses)[i] = ft_strnew(100);
+    ft_memset((game->prev_guesses)[i], 0, 100);
+  }
+  game->num_incorrect = 0;
+  play_game(game);
+
+  free(game->words);
+  free(game->output_string);
+  for(int i = 0; i < 100; i++)
+    free((game->prev_guesses)[i]);
+  free(game->prev_guesses);
 }
 
 char **ft_curl_and_split(void){
@@ -177,7 +191,11 @@ char **ft_curl_and_split(void){
 
 int main(void)
 {
-  char **words = ft_curl_and_split();
-  game_init(words);
+  t_game *game;
+
+  game = (t_game *)malloc(sizeof(t_game));
+  game->words = ft_curl_and_split();
+  game_init(game);
+  free(game);
   return 0;
 }
