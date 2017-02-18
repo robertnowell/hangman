@@ -27,6 +27,13 @@ struct string {
   size_t len;
 };
 
+struct game {
+  char  *word;
+  char  *output_string;
+  char  **prev_guesses;
+  int   num_incorrect;
+};
+
 void init_string(struct string *s) {
   s->len = 0;
   s->data = malloc(s->len+1);
@@ -101,6 +108,7 @@ void play_game(char *word, char *output_string)
   char **prev_guesses;
   int num_incorrect = 0;
   bool complete = false;
+  char *guess;
 
   if (!(prev_guesses = (char **)malloc(sizeof(char) * 100)))
     return;
@@ -111,6 +119,7 @@ void play_game(char *word, char *output_string)
   }
   while (!complete && num_incorrect < 6){
     ft_output(output_string, num_incorrect, prev_guesses);
+
   }
 }
 
