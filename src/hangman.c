@@ -17,12 +17,14 @@
 /*possible extensions
   any guess longer than malloced size of guess in play game will cause a heap buffer overflow
   same thing in answer and prev_guesses
-  use fdf animate result of guesses.
   
-  graphics
-    -hangman picture animation
-    -formatted output on screen (number of spaces/new lines)
-    -fdf for animation (just play around?)
+  make it so that the wireframe window doesn't close and open each time. This can be done by using script to input into stdin which file to load.
+  -then loading it from within wireframe program.
+  -add text to wireframe images.
+
+  -make code pretty
+
+  -make a readme
 */
 
 // #include <system.h>
@@ -166,19 +168,22 @@ void incorrect_guess(t_game *game, char guess){
     ft_append_guess(game, guess);
     switch(game->num_incorrect){
       case 1:
-        system("sh hangman_wireframe2.sh");
+        system("sh ./shells/hangman_wireframe1.sh");
         break;
       case 2:
-        system("sh hangman_wireframe3.sh");
+        system("sh ./shells/hangman_wireframe2.sh");
         break;
       case 3:
-        system("sh hangman_wireframe4.sh");
+        system("sh ./shells/hangman_wireframe3.sh");
         break;
       case 4:
-        system("sh hangman_wireframe5.sh");
+        system("sh ./shells/hangman_wireframe4.sh");
         break;
       case 5:
-        system("sh hangman_wireframe6.sh");
+        system("sh ./shells/hangman_wireframe5.sh");
+        break;
+      case 6:
+        system("sh ./shells/hangman_wireframe6.sh");
         break;
       default:
         return;
@@ -233,10 +238,12 @@ int play_game(t_game *game)
   scanf("%s", again);
   if (again[0] == 'y'){
     clear_screen();
-    free(again); 
+    system("sh ./shells/clear.sh");
+    free(again);
     return 1;
   }
   else{
+    system("sh ./shells/close.sh");
     ft_putstr("Okay. Have a nice day!\n");
     free(again); 
     return 0;
@@ -262,7 +269,7 @@ int pop_the_question(){
   if (answer[0] == 'y') {
     clear_screen();
     ft_putendl(GREEN "Super. Let's play!\n\n" RESET);
-    system("sh hangman_wireframe1.sh '1.fdf'");
+    system("sh ./shells/hangman_wireframe0.sh");
 
     free(answer);
     return (1);
