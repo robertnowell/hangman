@@ -25,6 +25,7 @@
     -fdf for animation (just play around?)
 */
 
+// #include <system.h>
 #include "libft.h"
 
 void init_string(struct string *s) {
@@ -159,6 +160,31 @@ bool find_in_prev_guess(t_game *game, char guess){
   return false;
 }
 
+void incorrect_guess(t_game *game, char guess){
+    ft_putendl(RED "incorrect guess\n\n\n" RESET);
+    game->num_incorrect++;
+    ft_append_guess(game, guess);
+    switch(game->num_incorrect){
+      case 1:
+        system("sh hangman_wireframe2.sh");
+        break;
+      case 2:
+        system("sh hangman_wireframe3.sh");
+        break;
+      case 3:
+        system("sh hangman_wireframe4.sh");
+        break;
+      case 4:
+        system("sh hangman_wireframe5.sh");
+        break;
+      case 5:
+        system("sh hangman_wireframe6.sh");
+        break;
+      default:
+        return;
+    }
+}
+
 int play_game(t_game *game)
 {
   bool complete = false;
@@ -184,10 +210,7 @@ int play_game(t_game *game)
       update_string(game, *guess);
       ft_append_guess(game, *guess);
     } else {
-      ft_putendl(RED "incorrect guess\n\n\n" RESET);
-      game->num_incorrect++;
-
-      ft_append_guess(game, *guess);
+      incorrect_guess(game, *guess);
     }
     if (!ft_strchr(game->output_string, '_'))
       complete = true;
@@ -239,6 +262,8 @@ int pop_the_question(){
   if (answer[0] == 'y') {
     clear_screen();
     ft_putendl(GREEN "Super. Let's play!\n\n" RESET);
+    system("sh hangman_wireframe1.sh '1.fdf'");
+
     free(answer);
     return (1);
   }
