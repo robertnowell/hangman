@@ -82,6 +82,17 @@ char **ft_strsplt(char *data){
 	return res;
 }
 
+#define SCREEN_HEIGHT 500
+
+int clear_screen()
+{
+  int i;
+  
+  for ( i = 0; i < SCREEN_HEIGHT; i++ )
+    putchar ( '\n' );
+    
+  return 0;
+}
 
 int ft_array_len(char **array){
   int count = 0;
@@ -103,17 +114,7 @@ void ft_output(t_game *game) {
   printf("\n");
 }
 
-#define SCREEN_HEIGHT 500
 
-int clear_screen()
-{
-  int i;
-  
-  for ( i = 0; i < SCREEN_HEIGHT; i++ )
-    putchar ( '\n' );
-    
-  return 0;
-}
 
 // void clear_screen()
 // {
@@ -151,6 +152,11 @@ void update_string(t_game *game, char guess){
   same thing in answer and prev_guesses
   use fdf animate result of guesses.
 */
+void print_words(char **words){
+  for (int i = 0; i < ft_array_len(words); i++){
+    ft_putendl(words[i]);
+  }
+}
 
 void ft_append_guess(t_game *game, char guess){
   for (int i = 0; i < ft_array_len(game->prev_guesses); i++)
@@ -171,10 +177,11 @@ bool find_in_prev_guess(t_game *game, char guess){
   return false;
 }
 
-void play_game(t_game *game)
+int play_game(t_game *game)
 {
   bool complete = false;
   char *guess;
+  char *again;
 
   guess = ft_strnew(100);
   while (!complete && game->num_incorrect < 6){
@@ -201,15 +208,30 @@ void play_game(t_game *game)
       game->num_incorrect++;
       ft_append_guess(game, *guess);
     }
-    // if (!ft_strchr(game->output_string, '_'))
-    complete = true;
+    if (!ft_strchr(game->output_string, '_'))
+      complete = true;
   }
   if (complete){
-    ft_putstr("congratulations! the answer was ");
+    ft_putstr("congratulations! the word was ");
     ft_putendl(game->word);
   }
-  printf("here1\n");
+  else {
+    clear_screen();
+    ft_putstr("GAME OVER\n\nNo more guesses remain. Better luck next time! The word was ");
+    ft_putendl(game->word);
+  }
   free(guess);
+  again = ft_strnew(100);
+  ft_putendl("Would you like to play again? (y or n)");
+  scanf("%s", again);
+  if (again[0] == 'y'){
+    free(again); 
+    return 1;
+  }
+  else{
+    free(again); 
+    return 0;
+  }
 }
 
 int pop_the_question(){
@@ -224,7 +246,7 @@ int pop_the_question(){
     free(answer);
     return (0);
   }
-  if (ft_strcmp(answer, "no") == 0){
+  if (ft_strcmp(answer, "no") == 0 || ft_strcmp(answer, "n") == 0){
     free(answer);
     return (0);
   }
@@ -237,7 +259,7 @@ int pop_the_question(){
 
 void init_game_vars(int r, t_game *game){
   game->word = game->words[r];
-  printf("words : (%s)\n", game->word);
+  printf("word : (%s)\n", game->word);
 
   game->output_string = ft_strnew(ft_strlen(game->word)+1);
   ft_memset(game->output_string, '_', ft_strlen(game->word));
@@ -263,9 +285,8 @@ void free_game_memory(t_game *game){
 void setup_game(t_game *game)
 {
   int r;
-  
-  if (!pop_the_question())
-    return;
+  int again = 1;
+
   srand(time(NULL));
   r = rand() % 162412;
   printf("number: (%d)\n", r);
@@ -277,10 +298,13 @@ void setup_game(t_game *game)
   ft_putstr("Please enter \"1\" to begin\n");
   int i;
   scanf("%d", &i);
-  play_game(game);
-  printf("here2\n");
+  while (1){
+    if ((again = play_game(game)) == 0)
+      break;
+    free_game_memory(game);
+    setup_game(game);
+  }
   free_game_memory(game);
-  printf("here3\n");
 }
 
 char **curl_and_split(void){
@@ -309,15 +333,13 @@ int main(void)
 
   game = (t_game *)malloc(sizeof(t_game));
   game->words = curl_and_split();
-  setup_game(game);
-  printf("here4\nwords pointer: %p\n", game->words);
+  if (pop_the_question())
+    setup_game(game);
 
-  for (int i = 0; i < ft_array_len(game->words); i++)
-  {
-    printf("words pointer: %p\nwords[%d]: %p\n", game->words, i, (game->words)[i]);
+  int len = ft_array_len(game->words);
+  for (int i = 0; i < len; i++)
     free((game->words)[i]);
-  }
-  printf("here5\n");
+  free(game->words);
   free(game);
   return 0;
 }
