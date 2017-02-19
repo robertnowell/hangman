@@ -16,8 +16,37 @@
 # include <unistd.h>
 # include <string.h>
 # include <stdlib.h>
+#include  <curl/curl.h>
 
+# define SCREEN_HEIGHT 500
 # define BUFF_SIZE 200
+
+# define INTENSE "\x1b[1m"
+
+# define RED      "\x1b[31m"
+# define GREEN    "\x1b[32m"
+// # define YELLOW   "\x1b[33m"
+# define BLUE     "\x1b[34m"
+# define MAGENTA  "\x1b[35m"
+# define CYAN     "\x1b[36m"
+# define RESET    "\x1b[0m"
+
+typedef int bool;
+# define true 1
+# define false 0
+
+struct string {
+  char *data;
+  size_t len;
+};
+
+typedef struct  s_game {
+  char  *word;
+  char  *output_string;
+  char  **prev_guesses;
+  char  **words;
+  int   num_incorrect;
+}               t_game;
 
 typedef struct		s_list
 {
