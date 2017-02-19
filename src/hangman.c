@@ -55,7 +55,7 @@
     -updates relevant variables
     -calls to wireframe generator to display new bodypart
     -see README for more information about 
-      shellscript management of wireframe generator
+        shellscript management of wireframe generator
 */
 void incorrect_guess(t_game *game, char guess){
     ft_putendl(RED "incorrect guess\n\n\n" RESET);
@@ -88,12 +88,12 @@ void incorrect_guess(t_game *game, char guess){
 /*
   game_engine:
       -this function handles the central mechanics of the game, including:
-      -calling ft_output to print user interface
+      -calling ft_output() to print user interface
       -requesting and receiving user guesses
       -determining and outputting whether a guess is correct
       -updating user interface after each guess
-      -calling to incorrect_guess when appropriate to update
-        wireframe graphic with a new bodypart
+      -calling to incorrect_guess() when appropriate to update
+          wireframe graphic with a new bodypart
 */
 bool game_engine(t_game *game){
   char *guess = ft_strnew(100);
@@ -232,8 +232,9 @@ int ask(){
 /*main:   declare and allocate memory for pointer to t_game struct
           call to curl_and_split() to retrieve and split word list into a two-d array
           call to ask() to see if user wants to play hangman
-          if so, make call to setup_game()
-          If player said no, or once setup_game() has returned (game is completed), free memory and exit.  
+          if so, make call to game_loop()
+          If player said no, or once game_loop() has returned,
+            free memory and exit.  
 */
 int main(void)
 {

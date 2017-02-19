@@ -31,8 +31,10 @@ size_t write_func(void *data, size_t size, size_t nmemb, struct string *s)
 }
 
 /*
-	ft_strsplt takes in a null terminated string and returns a null terminated array of null terminated strings
-	relies on strsep, which is a builtin function that finds the next instance of a specified separator character
+	ft_strsplt takes in a null terminated string and returns 
+	a null terminated array of null terminated strings
+	relies on strsep, which is a builtin function that 
+	finds the next instance of a specified separator character
 	and reutrns a pointer to that location in the original string.
 */
 char **ft_strsplt(char *data){
@@ -60,18 +62,20 @@ char **ft_strsplt(char *data){
 
 
 /*curl_and_split(void)
-  call to curl_easy_init() which sets up a few things needed for an http request
-  declare and initialize a string struct (has a field for string length, which is useful for receiving http request)
-  set a few operations to be performed.
-        -we're going to send our request to CURLOPT_URL.
-        -we're going to use write_func when we receive the information retrieved
-        -we're going to to send the output of write_func to string struct s;
-  -we call to curl function, which returns variable of type CURLcode;
-  -use ft_strsplt() to split the resulting very long string into an array of strings, one string for each word.
+  -call to curl_easy_init() which sets up a few things 
+  -needed for an http request
+  -declare and initialize a string struct 
+  		-the struct has a variable called length, 
+  		-this is useful for receiving data after http request
+  -set a few operations to be performed.
+        -send our request to CURLOPT_URL.
+        -use write_func when we receive the information retrieved
+        -send the output of write_func to string struct s;
+  -call to curl_easy_perform() function, which returns variable of type CURLcode;
+  -use ft_strsplt() to split the resulting string 
+  		into an array of strings, one string for each word.
   -free memory and call to curl_easy_cleanup()
   return words, the array of strings.
--questions:
-  -what is CURLcode type // what is return value of curl_easy_perform();
 */
 char **curl_and_split(void){
   CURL *curl;
@@ -82,7 +86,8 @@ char **curl_and_split(void){
   if(curl) {
     struct string s;
     init_string(&s);
-    curl_easy_setopt(curl, CURLOPT_URL, "linkedin-reach.hagbpyjegb.us-west-2.elasticbeanstalk.com/words");
+    curl_easy_setopt(curl, CURLOPT_URL, \
+    	"linkedin-reach.hagbpyjegb.us-west-2.elasticbeanstalk.com/words");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_func);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
     res = curl_easy_perform(curl);
