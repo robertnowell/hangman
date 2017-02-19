@@ -1,6 +1,6 @@
 NAME 		= hangman
 
-FILENAMES	= hangman.c 
+FILENAMES	= hangman.c http_request.c utilities.c
 
 SRCS		= $(addprefix src/, $(FILENAMES))
 

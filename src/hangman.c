@@ -15,153 +15,48 @@
 */
 
 /*possible extensions
+  -prepare to discuss:
+      -how to go about -sending different kinds of http requests
+                       -incorporating a high score leaderboard
+                       -create a hint function (and have a set quantity of allowed hints)
+                       -handle strings as guesses
+                       -how would I implement this in oop?
+                          -game object with methods
+                       -using something better than system() to call shell scripts
+
   any guess longer than malloced size of guess in play game will cause a heap buffer overflow
   same thing in answer and prev_guesses
   
   make it so that the wireframe window doesn't close and open each time. This can be done by using script to input into stdin which file to load.
   -then loading it from within wireframe program.
   -add text to wireframe images.
+  -think about prerotating wireframe images.
 
   -make code pretty
+    -separate into files with sensible function organization
+    -function names, especially the gameplay functions
+    -variable names
+    -
 
   -make a readme
+    -be able to explain every function
+    -create guide to library functions that I wrote myself
+      -ft_strnew(), ft_strdup(), ft_strchr(), 
+  /did have a segfault today...no idea why. on second guess.
+
 */
 
-// #include <system.h>
-#include "libft.h"
-
-void init_string(struct string *s) {
-  s->len = 0;
-  s->data = malloc(s->len+1);
-  if (s->data == NULL) {
-    fprintf(stderr, RED "malloc() failed\n" RESET);
-    exit(EXIT_FAILURE);
-  }
-  s->data[0] = '\0';
-}
-
-size_t writefunc(void *data, size_t size, size_t nmemb, struct string *s)
-{
-  size_t new_len = s->len + size*nmemb;
-  s->data = realloc(s->data, new_len+1);
-  if (s->data == NULL) {
-    ft_puterr(RED "realloc() failed\n" RESET);
-    exit(EXIT_FAILURE);
-  }
-  memcpy(s->data+s->len, data, size*nmemb);
-  s->data[new_len] = '\0';
-  s->len = new_len;
-
-  return size*nmemb;
-}
-
-char **ft_strsplt(char *data){
-	int count = 0;
-	int i = 0;
-	char *current;
-	char **res;
-	int len = ft_strlen(data);
-
-	for (i = 0; i < len; i++) {
-		if (data[i] == '\n')
-			count++;
-	}
-	if (!(res = (char **)malloc(sizeof(char *) * (count + 2)))){
-		return (NULL);
-	}
-	i = 0;
-  // printf("current:%p\nres:%p\n", current, res);
-	while ((current = strsep(&data, "\n")))
-		res[i++] = ft_strdup(current);
-	res[i] = "\0";
-	return res;
-}
-
-int clear_screen()
-{
-  int i;
-  
-  for ( i = 0; i < SCREEN_HEIGHT; i++ )
-    putchar ( '\n' );
-    
-  return 0;
-}
-
-int ft_array_len(char **array){
-  int count = 0;
-  int i = 0;
-  while (array[i][0]){
-    count++;
-    i++;
-  }
-  return count;
-}
-
-void ft_output(t_game *game) {
-  printf(CYAN "%s\nGuesses Remaining: %d\nPrevious Guesses: ", game->output_string, 6 - game->num_incorrect);
-  for (int i = 0; i < ft_array_len(game->prev_guesses); i++){
-    printf(CYAN "%s, " RESET, (game->prev_guesses)[i]);
-  }
-  printf("\n");
-}
-
-// void clear_screen()
-// {
-//   const char* CLEAR_SCREE_ANSI = "\e[1;1H\e[2J";
-//   write(1 , CLEAR_SCREE_ANSI,12);
-// }
-
-void update_string(t_game *game, char guess){
-  for (int i = 0; i < ft_strlen(game->output_string); i++){
-    if (game->word[i] == guess)
-      (game->output_string)[i] = guess;
-  }
-}
-
-// int ft_find_in_string(char const *s, int c)
-// {
-//   char  *str;
-//   size_t  i;
-
-//   str = (char *)s;
-//   i = ft_strlen(s) - 1;
-//   if (str[i + 1] == c)
-//     return (i + 1);
-//   while (str[i])
-//   {
-//     if (str[i] == c)
-//       return (i);
-//     i--;
-//   }
-//   return (-1);
-// }
+#include "hangman.h"
 
 
-void print_array(char **array){
-  for (int i = 0; i < ft_array_len(array); i++){
-    ft_putendl(array[i]);
-  }
-}
-
-void ft_append_guess(t_game *game, char guess){
-  for (int i = 0; i < 100; i++)
-  {
-    if ((game->prev_guesses)[i][0] == 0){
-      game->prev_guesses[i][0] = guess;
-      return;
-    }
-  }
-}
-
-bool find_in_prev_guess(t_game *game, char guess){
-  for (int i = 0; i < ft_array_len(game->prev_guesses); i++){
-    if ((game->prev_guesses)[i][0] == guess){
-      return true;
-    }
-  }
-  return false;
-}
-
+/*
+  incorrect_guess:
+    -is called when an incorrect guess is made
+    -updates relevant variables
+    -calls to wireframe generator to display new bodypart
+    -see README for more information about 
+      shellscript management of wireframe generator
+*/
 void incorrect_guess(t_game *game, char guess){
     ft_putendl(RED "incorrect guess\n\n\n" RESET);
     game->num_incorrect++;
@@ -190,13 +85,19 @@ void incorrect_guess(t_game *game, char guess){
     }
 }
 
-int play_game(t_game *game)
-{
+/*
+  game_engine:
+      -this function handles the central mechanics of the game, including:
+      -calling ft_output to print user interface
+      -requesting and receiving user guesses
+      -determining and outputting whether a guess is correct
+      -updating user interface after each guess
+      -calling to incorrect_guess when appropriate to update
+        wireframe graphic with a new bodypart
+*/
+bool game_engine(t_game *game){
+  char *guess = ft_strnew(100);
   bool complete = false;
-  char *guess;
-  char *again;
-
-  guess = ft_strnew(100);
   while (!complete && game->num_incorrect < 6){
     ft_output(game);
     ft_putendl(INTENSE CYAN "please make a guess:" RESET);
@@ -212,7 +113,7 @@ int play_game(t_game *game)
     else if (ft_strchr(game->word, *guess))
     {
       ft_putendl(GREEN "good guess!\n\n\n" RESET);
-      update_string(game, *guess);
+      update_output_string(game, *guess);
       ft_append_guess(game, *guess);
     } else {
       incorrect_guess(game, *guess);
@@ -220,75 +121,24 @@ int play_game(t_game *game)
     if (!ft_strchr(game->output_string, '_'))
       complete = true;
   }
-  if (complete){
-    ft_putstr(GREEN "congratulations! the word was " INTENSE);
-    ft_putendl(game->word);
-    ft_putstr("\n\n" RESET);
-  }
-  else {
-    clear_screen();
-    ft_putstr(RED "GAME OVER\n\nNo more guesses remain.\n\n\n" RESET \
-              GREEN "Better luck next time! The word was ");
-    ft_putendl(game->word);
-    ft_putstr("\n" RESET);
-  }
   free(guess);
-  again = ft_strnew(100);
-  ft_putendl("Would you like to play again? (y or n)");
-  scanf("%s", again);
-  if (again[0] == 'y'){
-    clear_screen();
-    system("sh ./shells/clear.sh");
-    free(again);
-    return 1;
-  }
-  else{
-    system("sh ./shells/close.sh");
-    ft_putstr("Okay. Have a nice day!\n");
-    free(again); 
-    return 0;
-  }
+  return complete;
 }
 
-#define OFFSET "\n\n\n\n\n\n\n\n"
+/*
+  init_game_vars
+    -determines random word for the game.
+    -initializes struct game by allocating memory for relevant fields.
+*/
+void init_game_vars(t_game *game){
+  int r;
 
-int pop_the_question(){
-  char *answer;
-
-  answer = ft_strnew(100);
-  ft_memset(answer, 0, 100);
-  clear_screen();
-  // ft_set_print_color_to(31);
-  printf(GREEN "How about a game of hangman? (y or n)" OFFSET RESET);
-  // ft_set_print_color_to(0);
-  if (scanf("%s", answer) < 0){
-    ft_puterr("error reading user input");
-    free(answer);
-    return (0);
-  }
-  if (answer[0] == 'y') {
-    clear_screen();
-    ft_putendl(GREEN "Super. Let's play!\n\n" RESET);
-    system("sh ./shells/hangman_wireframe0.sh");
-
-    free(answer);
-    return (1);
-  }
-  else {
-    ft_putstr("Okay. Have a nice day!\n");
-    free(answer);
-    return (0);
-  }
-}
-
-void init_game_vars(int r, t_game *game){
+  srand(time(NULL));
+  r = rand() % 162412;
   game->word = game->words[r];
   printf("word : (%s)\n", game->word);
-
   game->output_string = ft_strnew(ft_strlen(game->word)+1);
   ft_memset(game->output_string, '_', ft_strlen(game->word));
-  // printf("output_string: (%s)\n", game->output_string);
-
   if (!(game->prev_guesses = (char **)malloc(sizeof(char *) * 100)))
     return;
   for(int i = 0; i < 100; i++) {
@@ -298,57 +148,102 @@ void init_game_vars(int r, t_game *game){
   game->num_incorrect = 0;
 }
 
-void free_game_memory(t_game *game){
-  free(game->output_string);
-  for(int i = 0; i < 100; i++)
-    free((game->prev_guesses)[i]);
-  free(game->prev_guesses);
-}
-
-void setup_game(t_game *game)
+/*
+    game_loop:
+        -loop allows users to play game more than once
+        -calls to init_game_vars() to intialize game struct
+        -handles gamplay and game result
+        -frees and allocates memory each playthrough
+        -determines if user wants to play again
+*/
+void game_loop(t_game *game)
 {
-  int r;
-  int again = 1;
+  bool complete;
+  char *again;
 
-  srand(time(NULL));
-  while (1){
-    r = rand() % 162412;
-    init_game_vars(r, game);
-    again = play_game(game);
-    free_game_memory(game);
-    if (!again)
-      return;
+  while (1) {
+      init_game_vars(game);
+      complete = game_engine(game);
+      if (complete){
+        ft_putstr(GREEN "congratulations! the word was " INTENSE);
+        ft_putendl(game->word);
+        ft_putstr("\n\n" RESET);
+      }
+      else {
+        clear_screen();
+        ft_putstr(RED "GAME OVER\n\nNo more guesses remain.\n\n\n" RESET \
+                  GREEN "Better luck next time! The word was ");
+        ft_putendl(game->word);
+        ft_putstr("\n" RESET);
+      }
+      free_game_memory(game);
+      again = ft_strnew(100);
+      ft_putendl("Would you like to play again? (y or n)");
+      scanf("%s", again);
+      if (again[0] == 'y'){
+        clear_screen();
+        system("sh ./shells/clear.sh");
+        free(again);
+      }
+      else{
+        clear_screen();
+        system("sh ./shells/close.sh");
+        ft_putstr("Okay. Have a nice day!\n");
+        free(again); 
+        return;
+      }    
+  }
+
+}
+
+/*
+  ask() determines whether or not the play wants to play the game
+  returns 1 for yes, and 0 for no.
+  -if yes, makes first system call to run a hangman_wireframe shell script
+  the hangman_wireframe shell scripts cause a wireframe program to run 
+*/
+int ask(){
+  char *answer;
+
+  answer = ft_strnew(100);
+  ft_memset(answer, 0, 100);
+  clear_screen();
+  printf(GREEN "How about a game of hangman? (y or n)" OFFSET RESET);
+  if (scanf("%s", answer) < 0){
+    ft_puterr("error reading user input");
+    free(answer);
+    return (0);
+  }
+  if (answer[0] == 'y') {
+    clear_screen();
+    ft_putendl(GREEN "Super. Let's play!\n\n" RESET);
+    system("sh ./shells/hangman_wireframe0.sh");
+    free(answer);
+    return (1);
+  }
+  else {
+    clear_screen();
+    ft_putstr("Okay. Have a nice day!\n");
+    free(answer);
+    return (0);
   }
 }
 
-char **curl_and_split(void){
-  CURL *curl;
-  CURLcode res;
-  char **words;
-
-  curl = curl_easy_init();
-  if(curl) {
-    struct string s;
-    init_string(&s);
-    curl_easy_setopt(curl, CURLOPT_URL, "linkedin-reach.hagbpyjegb.us-west-2.elasticbeanstalk.com/words");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
-    res = curl_easy_perform(curl);
-    words = ft_strsplt(s.data);
-    free(s.data);
-    curl_easy_cleanup(curl);
-  }
-  return words;
-}
-
+/*main:   declare and allocate memory for pointer to t_game struct
+          call to curl_and_split() to retrieve and split word list into a two-d array
+          call to ask() to see if user wants to play hangman
+          if so, make call to setup_game()
+          If player said no, or once setup_game() has returned (game is completed), free memory and exit.  
+*/
 int main(void)
 {
   t_game *game;
 
-  game = (t_game *)malloc(sizeof(t_game));
+  if (!(game = (t_game *)malloc(sizeof(t_game))))
+    return -1;
   game->words = curl_and_split();
-  if (pop_the_question())
-    setup_game(game);
+  if (ask())
+    game_loop(game);
 
   int len = ft_array_len(game->words);
   for (int i = 0; i < len; i++)
