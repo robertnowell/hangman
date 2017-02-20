@@ -10,20 +10,40 @@ This program does the following:
 
 1. Makes an http request from the supplied dictionary URL and parses returned data into an array of strings.  
 2. Queries user as to whether they want to play hangman.  
-3. Sets up game by picking a random word, initializing a t_game struct used to hold relevant variables, and initiating two loops, one which handles user guesses within a game, and one which queries the user if they want to play again after the game is over.  
-4. Throughout the game, system() is used at certain points to execute shell scripts which run executable "wireframe" that allow for graphical functionality like the following:
+3. Sets up game by picking a random word, initializing a t_game struct used to hold relevant variables, and initiating two loops, one which handles user guesses within a game, and one which enables the user to play multiple games within the same session.  
+4. Throughout the game, system() is used at certain points to execute shell scripts which run executable "wireframe" that allow for graphical functionality like the following:  
 //image here
 
 ### Details and Code
 
-<img src="https://github.com/robertnowell/3d_wireframe/blob/master/images/main2.png" 
+<img src="https://github.com/robertnowell/hangman/blob/master/images/main.png" 
 alt="main" width="400" height="400" border="10"/>
 
-In lines 91-111 of the main function error checks the file and file descriptor and counts the file's rows and columns, using lseek() to reset the file offset.  
-  
-Next initialize_view() is called to initialize the struct t_view which is relied upon in this program. t_view is defined in includes/wireframe.h and looks like this:  
-<img src="https://github.com/robertnowell/3d_wireframe/blob/master/images/t_view.png" 
+Within the main function, at the bottom of src/hangman.c, the first operation is to declare a struct of type t_game. t_game is declared in includes/hangman.h and looks like this:
+
+<img src="https://github.com/robertnowell/hangman/blob/master/images/t_game.png" 
 alt="t_view" width="300" height="300" border="10"/>  
+
+a struct of type t_game with name 'game' holds all of the variables that the game needs to run.  
+
+game->words is assigned to the result of a call to curl_and_split(), which is responsible for making an http request and handling its output. This function and its associated functions are located in src/http_request.c. Curl_and_split handles two operations: making a request to the specified (hard coded) URL, and splitting the received data into an array of strings, using a newline as a delimiter. Retrieving data from this URL, use of this delimiter means that each string in the array will hold one word.  
+  
+To make the http request, the c curl library is relied upon. With this library, an http request is completed in about six function calls. These functions set up the operations to be performed when the call is made and then execute the call. Normally, output is directed to stdout. So, to save the output, write_func() is defined within src/http_request to redirect the retrieved data into a string. Even using a library, this is a relatively complicated process for retrieving data from a website relative to other programming languages. Once the data is retrieved and split into separate strings, the array of strings, is returned. There are approximately 160000 words stored in the website at the time of writing.  
+
+Returning to the main function, ask() is called which queries the user if they would like to play the game. ask() is the first appearance in the program of a system() call, and it runs a shell script that starts the wireframe executable which provides graphics functionality for the game. The wireframe is a program I created with its own readme: https://github.com/robertnowell/3d_wireframe  
+The shell script and wireframe functionality of the game is discussed further, below. Other than this, ask() is as simple as a few if statements, and returns 1 for yes (the user's response started with a 'y') or 0 for no (any other input). If the answer is no, allocated memory is freed and the program exits. Otherwise, main makes a call to game_loop(). Game loop is relatively important:  
+<img src="https://github.com/robertnowell/hangman/blob/master/images/game_loop.png"  
+alt="t_view" width="550" height="600" border="10"/>  
+
+This function starts a loop which will be active for the majority of the remainder of the time the program is open. That is, runs as long as the user is playing a game or being asked if they would like to play again. This loop enables users to play more than one game. Each iteration through the loop can be thought of as a full setup and playthrough of a game of hangman. For each playthrough, the first operation is a call to init_game_vars() which chooses a random word for the game and initializes the variables of the t_game struct based on this word. Next is a call to game_engine():  
+<img src="https://github.com/robertnowell/hangman/blob/master/images/game_engine.png"  
+alt="t_view" width="600" height="450" border="10"/>  
+game_engine() can be thought of as the function responsible for gameplay within a particular playthrough. It handles all in-game logic. That is, it handles all guesses and responses to guesses, and sends calls to incorrect_guesses() when an incorrect guess is made in order to make system calls to run a different wireframe image, corresponding to the number of guesses remaining in the game. The wireframe and shell script functionality is described below. game_engine() will exit its loop either when all characters of the word have been guessed or when no more guesses remain (that is, the number of incorrect guesses is 6). game_engine() returns a boolean value for whether the word was successfully guessed or not.  
+
+Returning to game_loop, the program outputs either a "game over" or "congratulations" message based on the return value from game_engine(), it frees the memory from struct game that was only important for that playthrough (essentially all variables are freed except for the array of strings names "words". This could be made more efficieent by only clearing some variables, rather than freeing the memory associated with them.) The program then asks the user if they would like to play again, and based on their response continues to the next iteration (if yes) or returns to main to free memory and exit.  
+
+### Wireframe and Shellscripts
+
 mlx and win are variables which allow for the presentation of visual output to the user. Proportionality is the degree of perspective projection applied (its default value is somewhat arbitrary). x_angle, y_angle, and z_angle store the value of the rotation (in radians) for each axis and are initialized to zero in initialize_view() in main.c:  
 <img src="https://github.com/robertnowell/3d_wireframe/blob/master/images/initialize_view.png" 
 alt="initialize_view" width="550" height="300" border="10"/>  
