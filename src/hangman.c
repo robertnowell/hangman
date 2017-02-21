@@ -6,18 +6,8 @@
                        -how would I implement this in oop?
                           -game object with methods
                        -using something better than system() to call shell scripts
-
-  any guess longer than malloced size of guess in play game will cause a heap buffer overflow
-  same thing in answer and prev_guesses
-
-TODO
-    -get rid of number presses in wireframe
-    -remove display of word on screen in hangman
-    -fix comments
-    -images in readme
-    -test
-    -add wireframe directory to repository
-    -fix game over and hangman images (add two empty lines on left)
+                       -any guess longer than malloced size of guess in play game will cause a heap buffer overflow
+                          -same thing in answer and prev_guesses
 */
 
 #include "hangman.h"
@@ -25,11 +15,11 @@ TODO
 
 /*
   incorrect_guess:
-    -is called when an incorrect guess is made
-    -updates relevant variables
-    -calls to wireframe generator to display new bodypart
-    -see README for more information about 
-        shellscript management of wireframe generator
+          -called when an incorrect guess is made
+          -updates relevant variables
+          -calls to wireframe generator to display new bodypart
+          -see README for more information about 
+            shellscript management of wireframe generator
 */
 void incorrect_guess(t_game *game, char guess){
     ft_putendl(RED "incorrect guess\n\n\n" RESET);
@@ -61,13 +51,13 @@ void incorrect_guess(t_game *game, char guess){
 
 /*
   game_engine:
-      -this function handles the central mechanics of the game, including:
-      -calling ft_output() to print user interface
-      -requesting and receiving user guesses
-      -determining and outputting whether a guess is correct
-      -updating user interface after each guess
-      -calling to incorrect_guess() when appropriate to update
-          wireframe graphic with a new bodypart
+          -this function handles the central mechanics of the game, including:
+          -calling ft_output() to print user interface
+          -requesting and receiving user guesses
+          -determining and outputting whether a guess is correct
+          -updating user interface after each guess
+          -calling to incorrect_guess() when appropriate to update
+             wireframe graphic with a new bodypart
 */
 bool game_engine(t_game *game){
   char *guess = ft_strnew(100);
@@ -101,8 +91,8 @@ bool game_engine(t_game *game){
 
 /*
   init_game_vars
-    -determines random word for the game.
-    -initializes struct game by allocating memory for relevant fields.
+          -determines random word for the game.
+          -initializes struct game by allocating memory for relevant fields.
 */
 void init_game_vars(t_game *game){
   int r;
@@ -110,7 +100,7 @@ void init_game_vars(t_game *game){
   srand(time(NULL));
   r = rand() % 162412;
   game->word = game->words[r];
-  // printf("word : (%s)\n", game->word);
+  printf("word : (%s)\n", game->word);
   game->output_string = ft_strnew(ft_strlen(game->word)+1);
   ft_memset(game->output_string, '_', ft_strlen(game->word));
   if (!(game->prev_guesses = (char **)malloc(sizeof(char *) * 100)))
@@ -139,6 +129,7 @@ void game_loop(t_game *game)
       init_game_vars(game);
       complete = game_engine(game);
       if (complete){
+        system("sh ./shells/wireframe_win.sh");
         ft_putstr(GREEN "congratulations! the word was " INTENSE);
         ft_putendl(game->word);
         ft_putstr("\n\n" RESET);
@@ -171,10 +162,12 @@ void game_loop(t_game *game)
 }
 
 /*
-  ask() determines whether or not the play wants to play the game
-  returns 1 for yes, and 0 for no.
-  -if yes, makes first system call to run a hangman_wireframe shell script
-  the hangman_wireframe shell scripts cause a wireframe program to run 
+  ask():
+          -determines whether or not the play wants to play the game
+          -returns 1 for yes, and 0 for no.
+          -if yes, makes first system call to run a hangman_wireframe shell script
+            the hangman_wireframe shell scripts cause a wireframe program to run
+            (see README for more info)
 */
 int ask(){
   char *answer;
@@ -203,11 +196,12 @@ int ask(){
   }
 }
 
-/*main:   declare and allocate memory for pointer to t_game struct
-          call to curl_and_split() to retrieve and split word list into a two-d array
-          call to ask() to see if user wants to play hangman
-          if so, make call to game_loop()
-          If player said no, or once game_loop() has returned,
+/*main:   
+          -declare and allocate memory for pointer to t_game struct
+          -call to curl_and_split() to retrieve and split word list into a two-d array
+          -call to ask() to see if user wants to play hangman
+          -if so, make call to game_loop()
+          -If player said no, or once game_loop() has returned,
             free memory and exit.  
 */
 int main(void)
