@@ -26,7 +26,7 @@ alt="main" width="400" height="400" border="10"/>
 Within the main function, at the bottom of src/hangman.c, the first operation is to declare a struct of type t_game. t_game is declared in includes/hangman.h and looks like this:
 
 <img src="https://github.com/robertnowell/hangman/blob/master/images/t_game.png" 
-alt="t_game" width="170" height="300" border="10"/>  
+alt="t_game" width="350" height="160" border="10"/>  
 
 a struct of type t_game with name 'game' holds all of the variables that the game needs to run.  
 
