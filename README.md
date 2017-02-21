@@ -21,7 +21,7 @@ This program does the following:
 ### Details and Code
 
 <img src="https://github.com/robertnowell/hangman/blob/master/images/main.png" 
-alt="main" width="400" height="400" border="10"/>
+alt="main" border="10"/>
 
 Within the main function, at the bottom of src/hangman.c, the first operation is to declare a struct of type t_game. t_game is declared in includes/hangman.h and looks like this:
 
