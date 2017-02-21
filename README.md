@@ -1,6 +1,7 @@
 ## Hangman
 
-This is a command line interface hangman game, implemented in C, with basic graphics functionality. When a wireframe window opens, the image can be rotated using the Q, W, E, A, S, and D keys.
+This is a command line interface hangman game, implemented in C, with basic graphics functionality. It works best when opened from the terminal, rather than being opened from a finder window. When a wireframe window opens, the image can be rotated using the Q, W, E, A, S, and D keys.
+
 
 ![alt text](https://github.com/robertnowell/3d_wireframe/blob/master/images/giphy.gif "42fdf")
 
