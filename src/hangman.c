@@ -1,22 +1,5 @@
-/*dependencies
-  libcurl: install libcurl from https://curl.haxx.se/download.html
-   in untarred directory, run ./configure --prefix=/path/to/curl/tree
-						then run: make
-						then: make install
-  run curl-config --cflags
-  run curl-config --libs
-  compile with "gcc -o executable_name hangman.c -L ./ -l ft" plus the output
-          of the call to curl-config --cflags and curl-config --libs.
-   for example, my final command is 
-   gcc -o test -L ./ -lft -L/usr/local/lib -lcurl -lldap -lz -I/usr/local/include hangman.c
-   from https://curl.haxx.se/docs/install.html
-   programming tutorial: https://curl.haxx.se/libcurl/c/libcurl-tutorial.html
-  think about implementing binary search for isolating a word?
-*/
-
 /*possible extensions
-  -prepare to discuss:
-      -how to go about -sending different kinds of http requests
+                       -sending different kinds of http requests
                        -incorporating a high score leaderboard
                        -create a hint function (and have a set quantity of allowed hints)
                        -handle strings as guesses
@@ -26,24 +9,15 @@
 
   any guess longer than malloced size of guess in play game will cause a heap buffer overflow
   same thing in answer and prev_guesses
-  
-  make it so that the wireframe window doesn't close and open each time. This can be done by using script to input into stdin which file to load.
-  -then loading it from within wireframe program.
-  -add text to wireframe images.
-  -think about prerotating wireframe images.
 
-  -make code pretty
-    -separate into files with sensible function organization
-    -function names, especially the gameplay functions
-    -variable names
-    -
-
-  -make a readme
-    -be able to explain every function
-    -create guide to library functions that I wrote myself
-      -ft_strnew(), ft_strdup(), ft_strchr(), 
-  /did have a segfault today...no idea why. on second guess.
-
+TODO
+    -get rid of number presses in wireframe
+    -remove display of word on screen in hangman
+    -fix comments
+    -images in readme
+    -test
+    -add wireframe directory to repository
+    -fix game over and hangman images (add two empty lines on left)
 */
 
 #include "hangman.h"
@@ -136,7 +110,7 @@ void init_game_vars(t_game *game){
   srand(time(NULL));
   r = rand() % 162412;
   game->word = game->words[r];
-  printf("word : (%s)\n", game->word);
+  // printf("word : (%s)\n", game->word);
   game->output_string = ft_strnew(ft_strlen(game->word)+1);
   ft_memset(game->output_string, '_', ft_strlen(game->word));
   if (!(game->prev_guesses = (char **)malloc(sizeof(char *) * 100)))
