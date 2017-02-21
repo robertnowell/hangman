@@ -100,7 +100,7 @@ void init_game_vars(t_game *game){
   srand(time(NULL));
   r = rand() % 162412;
   game->word = game->words[r];
-  printf("word : (%s)\n", game->word);
+  // printf("word : (%s)\n", game->word);
   game->output_string = ft_strnew(ft_strlen(game->word)+1);
   ft_memset(game->output_string, '_', ft_strlen(game->word));
   if (!(game->prev_guesses = (char **)malloc(sizeof(char *) * 100)))
