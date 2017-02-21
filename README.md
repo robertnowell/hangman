@@ -6,7 +6,7 @@ This is a command line interface hangman game, implemented in C, with basic grap
 
 ## Motivation
  
-The challenge prompt for this program was the following: implement a hangman game in a language of your choice, using libraries of your choice, and the only requirement was to make a single http request to retrieve the word list. I decided that implementing the program in C would be an interesting challenge. Two fun things I learned through this implementation were how to make http requests in C and how to integrate multiple running processes (which was required to have both command line gameplay and a 3-d graphics component to the game. Also, a good majority of the functions used were written by myself. Only scanf, printf, malloc, the curl functions, and a few others were built in functions that I used. Otherwise, all functions were written by myself as a part of this repository and the library libft, which is a partial recoding of the c standard library. The project ended up being more challenging than I anticipated, and I learned quite a bit through the experience.
+The challenge prompt for this program was the following: implement a hangman game in a language of your choice, using libraries of your choice, and the only requirement was to make a single http request to retrieve the word list. I decided that implementing the program in C would be an interesting challenge. Two fun things I learned through this implementation were how to make http requests in C and how to integrate multiple running processes (which was required to have both command line gameplay and a 3-d graphics component to the game. Also, a good majority of the functions used were written by myself. Only scanf, printf, malloc, the curl functions, and a few others were built in functions that I used. Otherwise, all functions were written as a part of this project the library libft, which is a partial recoding of the c standard library, and creating the wireframe project. The project ended up being more challenging than I anticipated, and I learned quite a bit through the experience.
 
 ## Implementation
 
@@ -21,12 +21,12 @@ This program does the following:
 ### Details and Code
 
 <img src="https://github.com/robertnowell/hangman/blob/master/images/main.png" 
-alt="main" width="400" height="400" border="10"/>
+alt="main" border="10"/>
 
-Within the main function, at the bottom of src/hangman.c, the first operation is to declare a struct of type t_game. t_game is declared in includes/hangman.h and looks like this:
+Within the main function, at the bottom of src/hangman.c, the first operation is to declare a struct of type t_game. t_game is defined in includes/hangman.h and looks like this:
 
 <img src="https://github.com/robertnowell/hangman/blob/master/images/t_game.png" 
-alt="t_game" width="300" height="300" border="10"/>  
+alt="t_game" border="10"/>  
 
 a struct of type t_game with name 'game' holds all of the variables that the game needs to run.  
 
