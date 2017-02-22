@@ -16,8 +16,7 @@ This program does the following:
 1. Makes an http request from the supplied dictionary URL and parses returned data into an array of strings.  
 2. Queries user as to whether they want to play hangman.  
 3. Sets up game by picking a random word, initializing a t_game struct used to hold relevant variables, and initiating two loops, one which handles user guesses within a game, and one which enables the user to play multiple games within the same session.  
-4. Throughout the game, system() is used at certain points to execute shell scripts which run executable "wireframe" that allow for graphical functionality like the following:  
-//image here
+4. Throughout the game, system() is used at certain points to execute shell scripts which run executable "wireframe" that allow for graphical functionality like the image at the top of this README.
 
 ### Details and Code
 
