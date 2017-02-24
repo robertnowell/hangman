@@ -50,7 +50,7 @@ Returning to game_loop, the program outputs either a "game over" or "congratulat
 
 This program graphically represents the hangman figure by simultaneously running a 3-d rendering program called wireframe, which I completed at school 42. The wireframe program is called by running a shell script which calls an apple script which interacts with the terminal application to open and run the wireframe app, and to change the displayed file based on in-game events, such as an incorrect guess. Documentation for the wireframe can be found here: https://github.com/robertnowell/3d_wireframe
 
-These are seven images run during the game:  
+These are seven images run during the game. The number at the top of each wirefream represents the remaining number of guesses:  
 <img src="https://github.com/robertnowell/hangman/blob/master/images/hang0.png" 
 alt="" width="400" height="400" border="10"/>
 <img src="https://github.com/robertnowell/hangman/blob/master/images/hang1.png" 
