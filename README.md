@@ -2,7 +2,7 @@
 
 This is a command line interface hangman game, implemented in C, with basic graphics functionality. Since it relies on the directory from which it was executed for graphics files, it works best when opened from the terminal, rather than being opened from a finder window. With a wireframe window open, the image can be rotated using the Q, W, E, A, S, and D keys.   
 
-
+ 
 ![alt text](https://github.com/robertnowell/hangman/blob/master/images/hangman.gif "42fdf")
 
 ## Motivation
