@@ -19,7 +19,7 @@ This program does the following:
 4. Throughout the game, system() is used at certain points to execute shell scripts which run executable "wireframe" that allow for graphical functionality like the image at the top of this README.
 
 ### Details and Code
-
+ 
 <img src="https://github.com/robertnowell/hangman/blob/master/images/main.png" 
 alt="main" border="10"/>
 
