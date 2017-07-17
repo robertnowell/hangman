@@ -8,7 +8,7 @@ This is a command line interface hangman game, implemented in C, with basic grap
 ## Motivation     
   
 The prompt for this programming challenge was the following: implement a hangman game in a language of your choice, using libraries of your choice, and the only requirement was to make a single http request to retrieve the word list. I decided that implementing the program in C would be an interesting challenge. Two fun things I learned through this implementation were how to make http requests in C and how to integrate multiple running processes (which was required to have both command line gameplay and a 3-d graphics component to the game. Also, a good majority of the functions used were written by myself. Only scanf, printf, malloc, the curl functions, and a few others were built in functions that I used. Otherwise, all functions were written as a part of this project, another project which involved a partial recoding of the c standard library, and creating the referenced 3d wireframe project. The project ended up being more challenging than I anticipated, and I learned quite a bit through the experience. 
-  
+   
 ## Implementation
 
 This program does the following:  
